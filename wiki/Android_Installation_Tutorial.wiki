@@ -1,71 +1,45 @@
 =Tutorial: Install Android on Photon=
 
+<br>Based on post of Tzacapaca:<br>
+http://forum.xda-developers.com/showthread.php?t=1002178<br>
 
+===1. download Android for photon===
+Latest release (29.04.2011)<br>
+https://rapidshare.com/files/459829976/29.04.2011.rar<br>
+http://ge.tt/7TgKPNd?c<br><br>
 
-Based on post of Tzacapaca:
+===2. copy the files ====
+copy the files from the folder named for_sd_card to the root of SD card<br><br>
 
-http://forum.xda-developers.com/showthread.php?t=1002178
+=== 3. remove your SIM card fore the first boot ===
+(otherwise you will have unexpected error in android)<br><br>
 
+===4. run HARET_PHOTON7227.exe ===
+(on the root of your SD card)<br><br>
 
-
-1.Download Android for photon.
-Latest release (29.04.2011)
-
-https://rapidshare.com/files/459829976/29.04.2011.rar
-
-http://ge.tt/7TgKPNd?c
-
-
-
-2.copy the files from the folder named for_sd_card to the root of SD card
-
-
-
-3. remove your SIM card before the first boot
+===5. wait 5-10 min...===
+Android should boot over Windows!<br><br>
 
 
 
-4. run HARET_PHOTON7227.exe (on the root of your SD card)
+===What to do if Android wont boot:===
+  * try format your SDcard using this tool:<br>
+<br>https://www.rapidshare.com/files/453829327/setup.exe<br>
+<u>format SD card instructions: </u><br>
+  # perform FULL ERASE,or FULL OVERWRITE <br>
+  # go on "My Computer",right click on card and format it again FAT32<br>
+  # install android and try again
 
+  * if you still have issues with boot, go buy a new SDCard. <br>
+Usualy Kingston gives good results, as well as some unbranded cards. See xda forum for help.<br>
 
+=== Known issues: ===
+  * GPS software in WM will not find satellites if you turn off GPS from location settings in Android
+  * if you lower ringtone volume in Android you will also have lower ringtone in WM(even if it's on maximum)
+  * 3G/GPRS connection is not working<br>
+  * other known bugs here:<br>
+http://forum.xda-developers.com/showthread.php?t=1073817<br>
 
-5. wait 5-10 min...
-
-Android should boot over Windows!
-
-
-
-What to do if Android wont boot:
-
-- try format your SDcard using this tool:
-
-https://www.rapidshare.com/files/453829327/setup.exe
-
-format SD card instructions:
-
-1.perform FULL ERASE,or FULL OVERWRITE 
-
-2.go on "My Computer",right click on card and format it again FAT32
-
-- if you still have issues with boot, go buy a new SDCard. usualy 
-Kingston gives good results, as well as some unbranded cards. See xda 
-forum for help.
-
-
-Known issues:
-
--GPS software in WM will not find satellites if you turn off GPS from location settings in Android
-
--if you lower ringtone volume in Android you will also have lower ringtone in WM(even if it's on maximum)
-
--complete list of issues here:
-
--3G/GPRS connection is not working
-
-complete issue list here:
-http://forum.xda-developers.com/showthread.php?t=1073817
-
-Wi-Fi static IP setup: (if DHCP dont work)
-
-go on Wireless & networks,Wi-fi settings and click home 
-button,advanced,use static IP and add an IP and the rest of settings from your network range,click back button and that's it.
+=== Wi-Fi static IP setup: (if DHCP dont work)===
+  * go on Wireless & networks,Wi-fi settings and click home button,advanced,use static IP
+  * add an IP and the rest of settings from your network range,click back button and that's it.
