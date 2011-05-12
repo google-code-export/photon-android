@@ -1,3 +1,5 @@
+#summary Tutorial: Install Android on Photon
+
 =Tutorial: Install Android on Photon=
 
 <br>Based on post of Tzacapaca:<br>
