@@ -16,7 +16,7 @@ copy the files from the folder named for_sd_card to the root of SD card<br><br>
 (otherwise you will have unexpected error in android)<br><br>
 
 ===4. run HARET_PHOTON7227.exe ===
-(on the root of your SD card)<br><br>
+(using windows explorer, at the root of your SD card)<br><br>
 
 ===5. wait 5-10 min...===
 Android should boot over Windows!<br><br>
