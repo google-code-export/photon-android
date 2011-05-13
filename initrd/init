@@ -1,0 +1,300 @@
+#!/bin/sh
+
+################################################
+# init for PHOTON Android by Cotulla
+################################################
+echo "Init started"
+
+# set PATH
+OLD_PATH=$PATH
+PATH=/bin:/sbin:/system/bin:/system/xbin
+export PATH
+
+mkdir -m 0755 /proc
+mount -t proc proc /proc
+mkdir -m 0755 /sys
+mount -t sysfs sys /sys
+
+echo "Starting Android" > /proc/printk
+
+cd dev
+mknod -m 777 console c 5 1
+cd ..
+
+#Configure Devices
+MAKEDEVS
+
+fail() {
+    echo "Failed"
+    echo "Failed" > /proc/printk
+    echo "$1"
+    echo "$1" > /proc/printk
+    exec /bin/sh
+}
+
+while [ ! -d /sys/block/mmcblk0 ] ; do
+    echo "Waiting for SD Card" > /proc/printk
+    sleep 1
+done
+#Wait a bit once mmcblk0 appears
+#Reading partition table could take some time
+sleep 5
+
+echo "sd detect finished..." > /proc/printk
+#
+# actual mount scripts
+#
+/bin/mount -o remount,rw / /
+
+################################################
+# detect sd partition
+################################################
+
+partition=mmcblk0p1
+# Try unpartitioned card
+if [ ! -d /sys/block/mmcblk0/$partition ] ; then
+    partition=mmcblk0
+fi
+
+################################################
+# mount sd card
+################################################
+
+echo "Partition for Andoroid: " $partition  > /proc/printk
+
+echo "Prepare SD card"   > /proc/printk
+mkdir -m 0777 /mnt/sdcard
+dosfsck -y /dev/block/$partition
+echo "Mount SD card"   > /proc/printk
+/bin/mount -t vfat -o fmask=0111,dmask=0000,rw,utf8,noatime,nodiratime /dev/block/$partition /mnt/sdcard
+[ $? -eq 0 ] || fail "Failed to mount the SD card. Cannot continue."
+echo "Mount done!"   > /proc/printk
+
+mkdir -m 0777 /sdcard
+mount /mnt/sdcard /sdcard
+
+#echo "thisistesttext" > /sdcard/my.txt
+
+################################################
+# detect path with android files
+################################################
+
+CARD_PATH=`/bin/grep -o "rel_path=.*" /proc/cmdline | /bin/sed -e "s/.*rel_path=//g" -e "s/ .*//g"`
+if [ "$CARD_PATH" = "" ]; then
+    CARD_PATH=""
+fi;
+
+if [ -d /sdcard/$CARD_PATH ]; then
+    card=/sdcard/$CARD_PATH
+else
+    card=/sdcard
+fi  
+
+echo "Andoroid path is: " $card  > /proc/printk
+
+################################################
+# process data.img and system.img
+################################################
+
+# check data.img, create if not exist 256mb
+
+if [ ! -f $card/data.ext2 ] ; then
+        echo "Creating a new Data store" > /proc/printk
+        data_size=`grep -o '\bdata_size=\w*' /proc/cmdline | sed 's/data_size=//'`
+        [ -z $data_size ] && data_size="512"
+        /bin/dd if=/dev/zero of=$card/data.ext2 bs=1048576 count=$data_size
+        [ $? -eq 0 ] || fail "Failed to allocate the storage" 
+        echo "Making data EXT2" > /proc/printk
+        /bin/mke2fs -F $card/data.ext2
+        [ $? -eq 0 ] || fail "Failed to format the storage"
+else
+	echo "Using existing Data store" > /proc/printk
+fi
+
+# mount data.img
+if [ -f $card/data.ext2 ] ; then
+        /bin/losetup /dev/block/loop0 $card/data.ext2
+        [ $? -eq 0 ] || fail "Failed to find data.img on SD Card"
+        /bin/e2fsck -y /dev/block/loop0
+        /bin/mount -t ext2 -o noatime,nodiratime,sync /dev/block/loop0 /data
+        [ $? -eq 0 ] || fail "Failed to mount /data"
+fi
+
+#insmod jbd2.ko
+#insmod ext4.ko
+#modprobe jbd2.ko
+#modprobe ext4.ko
+# mount data.ext4 
+#if [ -f $card/data.ext4 ] ; then
+#        /bin/losetup /dev/block/loop0 $card/data.ext4
+#        [ $? -eq 0 ] || fail "Failed to find data.img on SD Card"
+#        /bin/e2fsck -y /dev/block/loop0
+#        /bin/mount -t ext4 -o rw,nosuid,nodev,noatime,nodiratime,commit=19,barrier=0,nobh,data=writeback /dev/block/loop0 /data
+#        [ $? -eq 0 ] || fail "Failed to mount /data"
+#fi
+
+echo "data.ext2 prepare done" > /proc/printk
+
+# mount system.ext2
+if     [ -f $card/system.ext2 ] ; then
+	echo "Using uncompressed system"
+       losetup /dev/block/loop1 $card/system.ext2
+       [ $? -eq 0 ] || fail "Failed to reach system.ext2 on SD Card"
+	echo "Checking system EXT2" > /proc/printk
+       /bin/e2fsck -y /dev/block/loop1
+	echo "Mount system EXT2" > /proc/printk
+       /bin/mount -t ext2 -o noatime,nodiratime /dev/block/loop1 /system
+	[ $? -eq 0 ] || fail "Failed to mount /system"
+fi
+
+echo "system.ext2 prepare done" > /proc/printk
+
+################################################
+# apply updates
+################################################
+
+if [ -d $card/update ]; then
+	# update from zip package, Takaaki's method
+    echo "Applying updates"
+	valid_updates="build kernel app fix update"
+	for update in $valid_updates; do
+    	find $card/update/ -maxdepth 1 -name "$update*.zip" -exec apply_update {} \;
+	done
+	[ -s $card/update-error.log ] || rm -f $card/update-error.log
+	# update from shell scripts, cedesmith's method
+	echo "Executing uninstall scripts"
+	find "$card/update/" -maxdepth 1 -name "uninstall*.sh" -exec sh {} \;
+	echo "Executing install scripts"
+	find "$card/update/" -maxdepth 1 -name "install*.sh" -exec sh {} \;
+fi
+
+################################################
+# install apps
+################################################
+
+if [ -d $card/AndroidApps ]; then
+    echo "Install apps"
+    # create app directory if not found
+    [ ! -d /data/app ] && mkdir /data/app && chown 1000:1000 /data/app && chmod 0771 /data/app
+	# copy to temporary directory so we can set owner and permisions ( can't do it on sdcard's fat )
+    [ ! -d /data/app/tmp_copy_dir/ ] && mkdir /data/app/tmp_copy_dir
+    cp $card/AndroidApps/* /data/app/tmp_copy_dir
+    chown -R 1000:1000 /data/app/tmp_copy_dir
+	# set permisions, 0644 for file, 0755 for directory
+	find /data/app/tmp_copy_dir/ -type f -exec chmod 0644 {} \;
+	find /data/app/tmp_copy_dir/ -type d -exec chmod 0755 {} \;
+    # move apps to app directory
+	mv -f /data/app/tmp_copy_dir/* /data/app
+    # cleanup
+	rm -rf /data/app/tmp_copy_dir
+	rm -rf $card/AndroidApps
+fi
+
+################################################
+# copy root directory
+################################################
+
+if [ -d $card/root ]; then
+	echo "Update root directory"
+    # copy root direcotry
+	cp -af $card/root/* /
+	# cleanup
+	rm -rf $card/root
+fi
+
+################################################
+# run updates script
+################################################
+
+if [ -d $card/update ]; then
+	# update from shell scripts, cedesmith's method
+	echo "Executing update scripts"
+	find "$card/update/" -maxdepth 1 -name "update*.sh" -exec sh {} \;
+	rm -rf $card/update
+fi
+
+# execute build specific init scripts (with sh so x permission don't mather)
+find /system -maxdepth 1 -name "init*.sh" -exec sh '{}' \;
+
+################################################
+# move adbd to /system to save ram
+################################################
+
+[ ! -f /system/xbin/adbd ] && cp -a /sbin/adbd /system/xbin/ && rm -f /sbin/adbd
+[ -f /system/xbin/adbd ] && ln -s /system/xbin/adbd /sbin/adbd
+
+################################################
+# set gps zone
+################################################
+
+gps_zone=`grep -o '\bgps_zone=\w*' /proc/cmdline | sed 's/gps_zone=//'`
+[ -z $gps_zone ] && gps_zone="us"
+current_gps_zone=`awk -F"=" '/NTP_SERVER/ {print $2}' /system/etc/gps.conf`
+if [ "$gps_zone.pool.ntp.org" != "$current_gps_zone" ]; then
+    sed -i "s/$current_gps_zone/$gps_zone.pool.ntp.org/g" /system/etc/gps.conf
+fi
+
+################################################
+# set cache if not already set
+################################################
+
+# put in on /data and not sdcard as it supports permisions
+# if concerned about space used make a bigger data.img
+if [ ! -d /data/.cache ];then
+	mkdir -m 0777 /data/.cache
+	chown 1000:2001 /data/.cache
+fi
+ln -s /data/.cache /cache
+
+################################################
+# reboot if need
+################################################
+
+if [ -f $card/reboot ]; then
+    echo "Rebooting in 5 seconds..."
+    rm -f $card/reboot
+    umount /sdcard
+    umount /mnt/sdcard
+    sleep 5
+    /system/bin/toolbox reboot
+fi
+
+################################################
+# Create 200mb swap and mount it
+################################################
+
+if [ ! -f $card/swap ]; then
+    swap_size=`grep -o '\bswap_size=\w*' /proc/cmdline | sed 's/swap_size=//'`
+    [ -z $swap_size ] && swap_size="200"
+    /bin/dd if=/dev/zero of=$card/swap bs=1048576 count=$swap_size
+    [ $? -eq 0 ] || fail "Failed to allocate the swap"
+fi
+
+if [ -f $card/swap ]; then
+    /bin/mkswap $card/swap
+    /bin/swapon $card/swap
+    echo "Swap is activated - 200mb"
+fi
+
+################################################
+
+ln -s /dev/msm_camera/control0 /dev/msm_camera/control1
+ln -s /dev/msm_camera/frame0 /dev/msm_camera/frame1
+ln -s /dev/msm_camera/config0 /dev/msm_camera/config1
+
+#ls -l /data > /proc/printk
+# /bin/umount /sdcard
+# echo "Cleaning up..."
+umount -l /proc
+umount -l /sys
+
+# delete /bin to free ram
+rm -rf /bin
+ln -s /system/bin /bin
+# restore old PATH
+PATH=$OLD_PATH
+export PATH
+
+exec /init.ad
+
+#END OF FILE
