@@ -1,7 +1,7 @@
 #summary How to setup Wifi Static IP
 
-=== Introduction: ===
-If DHCP is not working, you might need to setup IP manually:<br><br>
+=== Why static IP? ===
+If DHCP is not working (=wifi cannot connect to your access point), you might need to setup IP manually:<br><br>
 
 === Wi-Fi static IP setup: ===
   * go on Wireless & networks > Wi-fi settings 
