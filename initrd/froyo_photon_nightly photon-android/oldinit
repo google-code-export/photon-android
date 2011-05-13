@@ -1,0 +1,109 @@
+#!/bin/sh
+
+
+echo "Starting AndroidZ...."
+/bin/echo "Starting AndroidZ2...."
+
+mkdir -m 0755 /proc
+mount -t proc proc /proc
+mkdir -m 0755 /sys
+mount -t sysfs sys /sys
+
+#Configure Devices
+MAKEDEVS
+
+fail() {
+    echo "Failed"
+    echo "$1"
+    exec /bin/sh
+}
+
+echo "Starting Android...."
+/bin/echo "Starting Android2...."
+
+while [ ! -d /sys/block/mmcblk0 ] ; do
+    echo "Waiting for SD Card"
+    sleep 1
+done
+#Wait a bit once mmcblk0 appears
+#Reading partition table could take some time
+sleep 1
+
+echo "sd detect finished..."
+/bin/echo "sd detect finished2..."
+#
+# actual mount scripts
+#
+
+/bin/mount -o remount,rw / /
+
+partition=mmcblk0p1
+# Try unpartitioned card
+if [ ! -d /sys/block/mmcblk0/$partition ] ; then
+    partition=mmcblk0
+fi
+
+echo "part detect finished..."
+
+# mount SD card as FAT 
+mount -t vfat -o fmask=0000,dmask=0000,rw,flush,noatime,nodiratime /dev/block/$partition /sdcard
+[ $? -eq 0 ] || fail "Failed to mount the SD card. Cannot continue."
+
+
+# Android need cache directory 
+if [ ! -d /sdcard/cache ] ; then
+    mkdir /sdcard/cache
+fi
+mount /sdcard/cache /cache
+
+
+CARD_PATH=`/bin/grep -o "rel_path=.*" /proc/cmdline | /bin/sed -e "s/.*rel_path=//g" -e "s/ .*//g"`
+if [ "$CARD_PATH" = "" ];then
+    CARD_PATH="Android"
+fi;
+
+if [ -d /sdcard/$CARD_PATH ] ; then
+    card=/sdcard/$CARD_PATH
+else
+    card=/sdcard
+fi  
+
+
+# check data.img, create if not exist 256mb
+if [ ! -f $card/data.img ] ; then
+        echo "Creating a new Data store"
+        dd if=/dev/zero of=$card/data.img bs=1048576 count=256
+        [ $? -eq 0 ] || fail "Failed to allocate the storage"
+        mke2fs -F $card/data.img
+        [ $? -eq 0 ] || fail "Failed to format the storage"
+fi
+
+# mount data.img 
+if      [ -f $card/system.ext2 ] ; then
+        losetup /dev/block/loop0 $card/data.img
+        [ $? -eq 0 ] || fail "Failed to find data.img on SD Card"
+        e2fsck -y /dev/block/loop0
+        mount -t ext2 -o noatime,nodiratime,sync /dev/block/loop0 /data
+        [ $? -eq 0 ] || fail "Failed to mount /data"
+fi
+
+# mount system.ext2
+if      [ -f $card/system.ext2 ] ; then
+	echo "Using uncompressed system"
+        losetup /dev/block/loop1 $card/system.ext2
+        [ $? -eq 0 ] || fail "Failed to reach system.ext2 on SD Card"
+        e2fsck -y /dev/block/loop1
+        mount -t ext2 -o noatime,nodiratime /dev/block/loop1 /system
+	[ $? -eq 0 ] || fail "Failed to mount /system"
+fi
+
+
+echo "Cleaning up..."
+umount -l /proc
+umount -l /sys
+
+exec /init.ad
+
+#END OF FILE
+
+
