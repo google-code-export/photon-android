@@ -2,13 +2,13 @@
 
 =Tutorial: Install Android on Photon=
 
-<br>Based on post of Tzacapaca:<br>
-http://forum.xda-developers.com/showthread.php?t=1002178<br>
+<br><br>Based on post of Tzacapaca:<br>
+http://forum.xda-developers.com/showthread.php?t=1002178<br><br>
 
 ===1. download Android for photon===
 Latest release can be found on the download section of this page: <br>
 http://code.google.com/p/photon-android/downloads/list
-
+<br><br>
 ===2. copy the files ====
 copy the files from the folder named for_sd_card to the root of SD card<br><br>
 
