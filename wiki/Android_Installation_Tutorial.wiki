@@ -25,9 +25,9 @@ Android should boot over Windows!<br><br>
 
 
 ===What to do if Android wont boot:===
-  * try format your SDcard using this tool:<br>
-<br>https://www.rapidshare.com/files/453829327/setup.exe<br>
-<u>format SD card instructions: </u><br>
+  * try format your SDcard using this tool:
+https://www.rapidshare.com/files/453829327/setup.exe<br><br>
+<u>Format SD card instructions: </u><br>
   # perform FULL ERASE,or FULL OVERWRITE <br>
   # go on "My Computer",right click on card and format it again FAT32<br>
   # install android and try again
