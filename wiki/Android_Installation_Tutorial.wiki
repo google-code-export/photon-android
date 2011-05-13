@@ -23,7 +23,7 @@ copy the files from the folder named for_sd_card to the root of SD card<br><br>
 Android should boot over Windows!<br><br>
 
 
-
+<br><br><br>
 ===What to do if Android wont boot:===
   * try format your SDcard using this tool:
 https://www.rapidshare.com/files/453829327/setup.exe<br><br>
@@ -41,7 +41,3 @@ Usualy Kingston gives good results, as well as some unbranded cards. See xda for
   * 3G/GPRS connection is not working<br>
   * other known bugs here:<br>
 http://forum.xda-developers.com/showthread.php?t=1073817<br>
-
-=== Wi-Fi static IP setup: (if DHCP dont work)===
-  * go on Wireless & networks,Wi-fi settings and click home button,advanced,use static IP
-  * add an IP and the rest of settings from your network range,click back button and that's it.
