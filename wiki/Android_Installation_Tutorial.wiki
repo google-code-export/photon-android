@@ -6,9 +6,8 @@
 http://forum.xda-developers.com/showthread.php?t=1002178<br>
 
 ===1. download Android for photon===
-Latest release (29.04.2011)<br>
-https://rapidshare.com/files/459829976/29.04.2011.rar<br>
-http://ge.tt/7TgKPNd?c<br><br>
+Latest release can be found on the download section of this page: <br>
+http://code.google.com/p/photon-android/downloads/list
 
 ===2. copy the files ====
 copy the files from the folder named for_sd_card to the root of SD card<br><br>
