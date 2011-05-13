@@ -12,7 +12,7 @@ http://code.google.com/p/photon-android/downloads/list
 ===2. copy the files ====
 copy the files from the folder named for_sd_card to the root of SD card<br><br>
 
-=== 3. remove your SIM card fore the first boot ===
+=== 3. remove your SIM card for the first android boot ===
 (otherwise you will have unexpected error in android)<br><br>
 
 ===4. run HARET_PHOTON7227.exe ===
