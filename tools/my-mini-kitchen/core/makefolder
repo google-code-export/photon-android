@@ -57,7 +57,7 @@ sudo umount ../tmp
 echo "Deleting tmp-dir..."
 rmdir ../tmp
 echo "Finalizing..."
-sudo chown -R $user_ ../WORKING/system/*
+#sudo chown -R $user_ ../WORKING/system/*
 
 rm -f unyaffs*stackdump
 

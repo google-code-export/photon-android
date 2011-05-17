@@ -48,7 +48,7 @@ then
 fi
 
 echo "chown all files in system (y/n)?"
-echo -n "(default: y  RECOMMENDED!): "
+echo -n "(default: y  NOT RECOMMENDED!): "
 read do_chown
 if [ "$do_chown" != "n" ]
 then
@@ -71,18 +71,19 @@ fi
 
 num_blocks=`expr $num_blocks + $extra_blocks`
 num_inodes=`find system | wc -l` ; num_inodes=`expr $num_inodes + 500`
+user_=`whoami`
 
 echo num_blocks=$num_blocks num_inodes=$num_inodes extra_blocks=$extra_blocks
 echo Building File..
 sudo genext2fs -d system -b $num_blocks -N $num_inodes -m 0 ../OUTPUT/system.ext2
-sudo chmod -R 777 ../OUTPUT/system.ext2
+sudo chown -R $user_:$user_ ../OUTPUT/system.ext2
+#sudo chmod -R 777 ../OUTPUT/system.ext2
 echo Doing some tuning..
 tune2fs -L system ../OUTPUT/system.ext2
 tune2fs -C 1 ../OUTPUT/system.ext2
 echo Checking Filesystem..
 e2fsck -fy ../OUTPUT/system.ext2
 echo Reverting SYSTEM folder...
-user_=`whoami`
 sudo chown -R $user_ system/*
 
 echo
