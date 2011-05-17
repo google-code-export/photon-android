@@ -17,8 +17,8 @@ do
   echo "============================================================"
   echo
   echo "  1 - Set up working folder from system.ext2"
+  echo "  3 - Build system.ext2 from working folder"
   echo
-  echo " 99 - Build ROM from working folder"
   echo "  0 - Clean up all folders"
   echo
   echo "  x - Exit"
@@ -29,7 +29,7 @@ do
 
     case $opt in
       1) clear; ./makefolder;;
-      99) ./makesystem;;
+      3) ./makesystem;;
       0) ./cleanup;;
       x) clear; echo; echo "Goodbye."; echo; exit 1;;
       *) echo "Invalid option"; continue;;
