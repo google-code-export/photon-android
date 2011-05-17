@@ -1,0 +1,73 @@
+#!/bin/bash
+
+echo
+echo "Building workingfolder from system.ext2"
+echo
+
+if [ -d ../ORIGIN ]
+then
+  echo Found ORIGIN folder...
+else
+  echo "ERROR No origin folder found. Place your file first"
+  read pah
+  exit 0
+fi
+
+if [ -f ../ORIGIN/system.ext2 ]
+then
+  echo Found system.ext2...
+else
+  echo "ERROR No system.ext2 file found. Place your file first"
+  read pah
+  exit 0
+fi
+
+if [ -d ../WORKING ]
+then
+  echo Found WORKING folder...
+  if [ -d ../WORKING/system ]
+    then
+      echo
+      echo "A SYSTEM has been found in WORKING folder!"
+      echo -n "Should it be removed(y) or exit(n) (default:n)?: "
+      read do_remove
+    if [ "$do_remove" == "y" ]
+    then
+      sudo rm -rf ../WORKING/system
+      echo ..removed !
+    else
+      exit 0
+    fi
+  fi
+else
+  echo "ERROR No origin folder found. Place your file first"
+  exit 0
+fi
+
+user_=`whoami`
+echo "Make tmp-dir..."
+mkdir ../tmp
+echo "Mounting Image..."
+sudo mount -o loop ../ORIGIN/system.ext2 ../tmp
+echo "Copying files..."
+mkdir ../WORKING/system
+sudo cp -ra ../tmp/* ../WORKING/system
+echo "Unmounting Image..."
+sudo umount ../tmp
+echo "Deleting tmp-dir..."
+rmdir ../tmp
+echo "Finalizing..."
+sudo chown -R $user_ ../WORKING/system/*
+
+rm -f unyaffs*stackdump
+
+echo
+echo Finished!
+echo
+cd ../WORKING/system
+ls -lrt
+cd ..
+cd ..
+echo
+echo "Press Enter to continue"
+read enterKey

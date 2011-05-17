@@ -1,0 +1,98 @@
+#!/bin/bash
+
+echo
+echo "Building system.ext2 from workingfolder"
+echo
+
+if [ -d ../WORKING ]
+then
+  echo Found working folder...
+else
+  echo "ERROR No working folder found. Run Extractshell first!"
+  read pah
+  exit 0
+fi
+
+cd ../WORKING
+
+if [ -d system ]
+then
+  echo System found...
+else
+  echo "ERROR No system folder found. Run Extractshell first!"
+  read pah
+  exit 0
+fi
+
+if [ -f ../OUTPUT/system.ext2 ]
+then
+  echo
+  echo -n "Old system.ext2 found... remove it (y/n)? (default: y): "
+  read do_remove
+  if [ "$do_remove" == "n" ]
+  then
+    exit 0
+  fi
+  rm -r ../OUTPUT/system.ext2
+  echo ..removed!
+fi
+
+echo
+echo  "chmod all files in system (y/n)?"
+echo -n "(default: n  NOT RECOMMENDED OR REVERTABLE!!): "
+read do_chmod
+if [ "$do_chmod" == "y" ]
+then
+  sudo chmod -R 755 system
+  echo ..Done !
+fi
+
+echo "chown all files in system (y/n)?"
+echo -n "(default: y  RECOMMENDED!): "
+read do_chown
+if [ "$do_chown" != "n" ]
+then
+  sudo chown -R root:root system/*
+  echo ..Done !
+fi
+
+echo
+
+echo OK, Doing the job now!
+echo 
+echo Preparing..
+num_blocks=`du -sk system | tail -n1 | awk '{print $1;}'`
+if [ $num_blocks -lt 20480 ]
+then
+	extra_blocks=3072
+else
+        extra_blocks=20480
+fi
+
+num_blocks=`expr $num_blocks + $extra_blocks`
+num_inodes=`find system | wc -l` ; num_inodes=`expr $num_inodes + 500`
+
+echo num_blocks=$num_blocks num_inodes=$num_inodes extra_blocks=$extra_blocks
+echo Building File..
+sudo genext2fs -d system -b $num_blocks -N $num_inodes -m 0 ../OUTPUT/system.ext2
+sudo chmod -R 777 ../OUTPUT/system.ext2
+echo Doing some tuning..
+tune2fs -L system ../OUTPUT/system.ext2
+tune2fs -C 1 ../OUTPUT/system.ext2
+echo Checking Filesystem..
+e2fsck -fy ../OUTPUT/system.ext2
+echo Reverting SYSTEM folder...
+user_=`whoami`
+sudo chown -R $user_ system/*
+
+echo
+echo Finished!
+echo
+cd ../OUTPUT
+ls -lrt
+cd ..
+
+echo
+echo "Press Enter to continue"
+read enterKey
+

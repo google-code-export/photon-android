@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo
+echo "Make a big CleanUp!"
+echo
+
+echo "Cleaning ORIGIN..."
+rm -rf ../ORIGIN/*
+echo "Cleaning WORKING..."
+rm -rf ../WORKING/*
+echo "Cleaning OUTPUT..."
+rm -rf ../OUTPUT/*
+echo
+echo Finished!
+echo
+echo "Press Enter to continue"
+read enterKey
