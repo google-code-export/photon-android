@@ -16,8 +16,8 @@ do
   echo "            HTC HD mini Android Kitchen by Schlund"
   echo "============================================================"
   echo
-  echo "  1 - Set up working folder from system.ext2"
-  echo "  3 - Build system.ext2 from working folder"
+  echo "  1 - Set up working folder from haret files"
+  echo "  3 - Build haret files from working folder"
   echo
   echo "  0 - Clean up all folders"
   echo

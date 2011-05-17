@@ -1,73 +1,100 @@
 #!/bin/bash
 
 echo
-echo "Building workingfolder from system.ext2"
+echo "Building workingfolder"
 echo
+user_=`whoami`
 
-if [ -d ../ORIGIN ]
+#CHECK FOR MAIN FOLDERS
+echo "General lookup:"
+if [ -d ../ORIGIN ] && [ -d ../WORKING ]
 then
-  echo Found ORIGIN folder...
+  echo Found main folders...
 else
-  echo "ERROR No origin folder found. Place your file first"
+  echo "ERROR At least one main folder not found. Restart the kitchen!"
   read pah
   exit 0
 fi
 
+#CHECK FOR ORIGIN FILES
 if [ -f ../ORIGIN/system.ext2 ]
 then
   echo Found system.ext2...
-else
-  echo "ERROR No system.ext2 file found. Place your file first"
+  issystem="y"
+fi
+if [ -f ../ORIGIN/initrd.gz ]
+then
+  echo Found initrd.gz...
+  isinitrd="y"
+fi
+
+if [ "$issystem" == "" ] && [ "$isinitrd" == "" ]
+then
+  echo "ERROR No usesful files found in ORIGIN folder. Place your file first"
   read pah
   exit 0
 fi
 
-if [ -d ../WORKING ]
+#CHECK FOR OLD WORKING FILES
+if [ `ls -1a ../WORKING|wc -l` -gt 2 ]
 then
-  echo Found WORKING folder...
-  if [ -d ../WORKING/system ]
-    then
-      echo
-      echo "A SYSTEM has been found in WORKING folder!"
-      echo -n "Should it be removed(y) or exit(n) (default:n)?: "
-      read do_remove
-    if [ "$do_remove" == "y" ]
-    then
-      sudo rm -rf ../WORKING/system
-      echo ..removed !
-    else
-      exit 0
-    fi
+  echo
+  echo "Files have been found in WORKING folder!"
+  echo -n "Should it be removed(y) or exit(n) (default:n)?: "
+  read do_remove
+  if [ "$do_remove" == "y" ]
+  then
+    sudo rm -rf ../WORKING/*
+    echo ..removed !
+  else
+    exit 0
   fi
-else
-  echo "ERROR No origin folder found. Place your file first"
-  exit 0
 fi
 
-user_=`whoami`
-echo "Make tmp-dir..."
-mkdir ../tmp
-echo "Mounting Image..."
-sudo mount -o loop ../ORIGIN/system.ext2 ../tmp
-echo "Copying files..."
-mkdir ../WORKING/system
-sudo cp -ra ../tmp/* ../WORKING/system
-echo "Unmounting Image..."
-sudo umount ../tmp
-echo "Deleting tmp-dir..."
-rmdir ../tmp
+#DOING THE SYSTEM.EXT2 FILE
+if [ "$issystem" == "y" ]
+then
+  echo
+  echo "WORKING ON SYSTEM.EXT2:"
+  echo "Make tmp-dir..."
+  mkdir ../tmp
+  echo "Mounting Image..."
+  sudo mount -o loop ../ORIGIN/system.ext2 ../tmp
+  echo "Copying files..."
+  mkdir ../WORKING/system
+  sudo cp -ra ../tmp/* ../WORKING/system
+  echo "Unmounting Image..."
+  sudo umount ../tmp
+  echo "Deleting tmp-dir..."
+  rmdir ../tmp
+fi
+
+#DOING THE INITRD.GZ FILE
+if [ "$isinitrd" == "y" ]
+then
+  echo
+  echo "WORKING ON INITRD.GZ:"
+  echo "Making initrd folder..."
+  mkdir ../WORKING/initrd
+  echo "Copying the file..."
+  cp ../ORIGIN/initrd.gz ../WORKING/initrd/
+  echo "Extracting the file..."
+  cd ../WORKING/initrd
+  cat initrd.gz | gzip -d | cpio -im
+  cd ../../core
+  echo "Cleaning up..."
+  rm ../WORKING/initrd/initrd.gz
+fi
+
+echo
 echo "Finalizing..."
-#sudo chown -R $user_ ../WORKING/system/*
+sudo chown -R $user_ ../WORKING/system/*
 
 rm -f unyaffs*stackdump
 
 echo
 echo Finished!
 echo
-cd ../WORKING/system
-ls -lrt
-cd ..
-cd ..
 echo
 echo "Press Enter to continue"
 read enterKey

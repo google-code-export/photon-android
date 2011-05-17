@@ -1,66 +1,55 @@
 #!/bin/bash
 
 echo
-echo "Building system.ext2 from workingfolder"
+echo "Building files from workingfolder"
 echo
+user_=`whoami`
 
-if [ -d ../WORKING ]
+#CHECK FOR MAIN FOLDERS
+if [ -d ../OUTPUT ] && [ -d ../WORKING ]
 then
-  echo Found working folder...
+  echo Found main folders...
 else
-  echo "ERROR No working folder found. Run Extractshell first!"
+  echo "ERROR At least one main folder not found. Restart the kitchen!"
   read pah
   exit 0
+fi
+
+#CHECK FOR FILES IN WORKING FOLDER
+if [ -d ../WORKING/system ] && [ `ls -1a ../WORKING/system|wc -l` -gt 2 ]
+then
+  echo Found system...
+  issystemW="y"
+fi
+if [ -d ../WORKING/initrd ] && [ `ls -1a ../WORKING/initrd|wc -l` -gt 2 ]
+then
+  echo Found initrd...
+  isinitrdW="y"
 fi
 
 cd ../WORKING
 
-if [ -d system ]
-then
-  echo System found...
-else
-  echo "ERROR No system folder found. Run Extractshell first!"
-  read pah
-  exit 0
-fi
-
-if [ -f ../OUTPUT/system.ext2 ]
+#CHECK FOR FILES IN OUTPUT FOLDER
+if [ -f ../OUTPUT/* ]
 then
   echo
-  echo -n "Old system.ext2 found... remove it (y/n)? (default: y): "
+  echo -n "Old files in OUTPUT folder found... remove it (y/n)? (default: y): "
   read do_remove
   if [ "$do_remove" == "n" ]
   then
     exit 0
   fi
-  rm -r ../OUTPUT/system.ext2
+  rm -r ../OUTPUT/*
   echo ..removed!
 fi
 
-echo
-echo  "chmod all files in system (y/n)?"
-echo -n "(default: n  NOT RECOMMENDED OR REVERTABLE!!): "
-read do_chmod
-if [ "$do_chmod" == "y" ]
+#GETTING STARTED WITH SYSTEM.EXT2
+if [ "$issystemW" == "y" ]
 then
-  sudo chmod -R 755 system
-  echo ..Done !
-fi
-
-echo "chown all files in system (y/n)?"
-echo -n "(default: y  NOT RECOMMENDED!): "
-read do_chown
-if [ "$do_chown" != "n" ]
-then
-  sudo chown -R root:root system/*
-  echo ..Done !
-fi
-
 echo
-
-echo OK, Doing the job now!
-echo 
+echo "DOING ON SYSTEM.EXT2:"
 echo Preparing..
+sudo chown -R root system/*
 num_blocks=`du -sk system | tail -n1 | awk '{print $1;}'`
 if [ $num_blocks -lt 20480 ]
 then
@@ -71,13 +60,11 @@ fi
 
 num_blocks=`expr $num_blocks + $extra_blocks`
 num_inodes=`find system | wc -l` ; num_inodes=`expr $num_inodes + 500`
-user_=`whoami`
 
 echo num_blocks=$num_blocks num_inodes=$num_inodes extra_blocks=$extra_blocks
 echo Building File..
 sudo genext2fs -d system -b $num_blocks -N $num_inodes -m 0 ../OUTPUT/system.ext2
 sudo chown -R $user_:$user_ ../OUTPUT/system.ext2
-#sudo chmod -R 777 ../OUTPUT/system.ext2
 echo Doing some tuning..
 tune2fs -L system ../OUTPUT/system.ext2
 tune2fs -C 1 ../OUTPUT/system.ext2
@@ -85,11 +72,23 @@ echo Checking Filesystem..
 e2fsck -fy ../OUTPUT/system.ext2
 echo Reverting SYSTEM folder...
 sudo chown -R $user_ system/*
+fi
 
+#GETTING STARTED WITH INITRD.GZ
+if [ "$isinitrdW" == "y" ]
+then
+  echo
+  echo
+  echo "DOING ON INITRD.GZ:"
+  cd initrd
+  echo "Making file..."
+  find | cpio -H newc -o | gzip > ../../OUTPUT/initrd.gz
+fi
+  
 echo
 echo Finished!
 echo
-cd ../OUTPUT
+cd ../../OUTPUT
 ls -lrt
 cd ..
 
