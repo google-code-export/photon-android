@@ -1,0 +1,22 @@
+#summary Just a small how to about to use the kitchen
+
+= Introduction =
+
+This is more thought to be for developers, to set up and change system.ext2 and initrd.gz partitions and is not meant to be used by people that don't know what they are doing! So do not expect any "support". Suggested improvements are very welcome !
+
+= Requirements =
+
+  * First of all you will need <b>working Linux</b> (Ubuntu recommend).
+  * You will have to download and install <b>my-mini Kitchen</b>. You can get it here in our sources, but easiest way would be typing:<br> <b>svn checkout http://photon-android.googlecode.com/svn/tools/my-mini-kitchen</b><br>to your console. This will create a folder "my-mini-kitchen". Enter the folder and start with: <b>./start</b> and some folders will be created...
+
+= Working with the kitchen =
+
+This will be the easiest thing on the world:
+
+  * Put your original system.ext2 and/or initrd.gz files to the folder ORIGIN
+  * begin creating up a workingfolder with <b>option 1</b> in the menu
+  * Now you should have the extracted files in your WORKING folder
+  * Edit your files how ever you want, but keep an Eye on the permission!
+  * To rebuild the files use <b>option 3</b> in the menu, if you get no errors your files will be placed to folder "OUTPUT"
+
+That's it! Have fun :)
