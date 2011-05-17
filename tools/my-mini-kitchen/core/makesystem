@@ -30,7 +30,7 @@ fi
 cd ../WORKING
 
 #CHECK FOR FILES IN OUTPUT FOLDER
-if [ -f ../OUTPUT/* ]
+if [ `ls -1a ../OUTPUT|wc -l` -gt 2 ]
 then
   echo
   echo -n "Old files in OUTPUT folder found... remove it (y/n)? (default: y): "
