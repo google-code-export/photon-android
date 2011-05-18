@@ -10,6 +10,8 @@ echo "Cleaning WORKING..."
 rm -rf ../WORKING/*
 echo "Cleaning OUTPUT..."
 rm -rf ../OUTPUT/*
+echo "Cleaning kernel source path..."
+rm -rf ../pathtokernel
 echo
 echo Finished!
 echo

@@ -27,6 +27,11 @@ then
   echo Found initrd.gz...
   isinitrd="y"
 fi
+if [ -f ../ORIGIN/zImage ]
+then
+  echo Found zImage...
+  iszImage="y"
+fi
 
 if [ "$issystem" == "" ] && [ "$isinitrd" == "" ]
 then
@@ -84,6 +89,15 @@ then
   cd ../../core
   echo "Cleaning up..."
   rm ../WORKING/initrd/initrd.gz
+fi
+
+#DOING THE KERNEL FILE
+if [ "$iszImage" == "y" ]
+then
+  echo
+  echo "WORKING ON KERNEL:"
+  echo "Copying kernel..."
+  cp -v ../ORIGIN/zImage ../WORKING
 fi
 
 echo

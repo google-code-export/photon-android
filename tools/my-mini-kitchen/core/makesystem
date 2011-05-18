@@ -26,6 +26,18 @@ then
   echo Found initrd...
   isinitrdW="y"
 fi
+if [ -f ../WORKING/zImage ]
+then
+  echo Found zImage...
+  iszImageW="y"
+fi
+
+if [ "$issystemW" == "" ] && [ "$isinitrdW" == "" ]
+then
+  echo "ERROR No usesful files found in WORKING folder!"
+  read pah
+  exit 0
+fi
 
 cd ../WORKING
 
@@ -83,12 +95,24 @@ then
   cd initrd
   echo "Making file..."
   find | cpio -H newc -o | gzip > ../../OUTPUT/initrd.gz
+  cd ..
 fi
-  
+
+#GETTING STARTED WITH KERNEL
+if [ "$iszImageW" == "y" ]
+then
+  echo
+  echo
+  echo "DOING ON KERNEL:"
+  echo "Copying Kernel..."
+  cp -v zImage ../OUTPUT
+fi
+
+
 echo
 echo Finished!
 echo
-cd ../../OUTPUT
+cd ../OUTPUT
 ls -lrt
 cd ..
 

@@ -1,0 +1,79 @@
+#!/bin/bash
+echo
+echo "Get kernel/modules & include to ROM"
+echo
+user_=`whoami`
+
+#CHECK FOR MAIN FOLDERS
+echo "General lookup:"
+if [ -d ../WORKING ]
+then
+  echo Found WORKING folder...
+else
+  echo "WORKING folder not found. Restart the kitchen!"
+  read pah
+  exit 0
+fi
+
+#CHECK FOR FILES IN WORKING FOLDER
+if [ -d ../WORKING/system ] && [ `ls -1a ../WORKING/system|wc -l` -gt 2 ]
+then
+  echo Found system...
+  if [ -d ../WORKING/system/lib/modules ]
+  then
+    echo Found module folder...
+    issystemmodules="y"
+  else
+    echo "module folder not found. Check your WORKING folder!"
+    read pah
+    exit 0
+  fi
+else
+  echo "no system found. Check your WORKING folder!"
+  read pah
+  exit 0
+fi
+
+#ABOUT KERNEL SOURCE PATH
+cd ..
+if [ -e pathtokernel ]
+then
+  echo "kernel source link found..."
+  if [ -f pathtokernel/Makefile ]
+  then
+    echo "Path seems to be ok..."
+  else
+    echo "Path is NOT ok! Check your path!"
+    read pah
+    exit 0
+  fi
+else
+  echo -n "relative path to kernel source (from kitchen root; ../kernel e.g.): "
+  read pathtokernel
+  if [ -f $pathtokernel/Makefile ]
+  then
+    echo "Path seems to be ok..."
+    ln -s $pathtokernel pathtokernel 
+  else
+    echo "Path is NOT ok! Check your path!"
+    read pah
+    exit 0
+  fi
+fi
+
+#COPY THE FILES
+echo
+echo 'Copying modules...'
+find pathtokernel/drivers/ -iname '*.ko'  -exec cp -vf {} WORKING/system/lib/modules \;
+echo  "Copying kernel..."
+cp -vf pathtokernel/arch/arm/boot/zImage WORKING
+echo "Adding permissions..."
+sudo chown $user_:root WORKING/system/lib/modules/*.ko
+sudo chmod 0744 WORKING/system/lib/modules/*.ko
+cd core
+echo
+echo Finished!
+echo
+echo
+echo "Press Enter to continue"
+read enterKey
