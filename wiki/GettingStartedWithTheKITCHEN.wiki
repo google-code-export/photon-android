@@ -7,6 +7,7 @@ This is more thought to be for developers, to set up and change system.ext2 and 
 = Requirements =
 
   * First of all you will need <b>working Linux</b> (Ubuntu recommended).
+  * It could be possible that you will have to install genext2fs. Check this by typing this to your console:<br><b>sudo apt-get install genext2fs</b>
   * You will have to download and install <b>my-mini Kitchen</b>. You can get it here in our sources, but easiest way would be typing:<br> <b>svn checkout http://photon-android.googlecode.com/svn/tools/my-mini-kitchen</b><br>to your console. This will create a folder "my-mini-kitchen". Enter the folder and start with: <b>./start</b> and some folders will be created...
 
 = Working with the kitchen =
