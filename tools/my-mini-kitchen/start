@@ -30,8 +30,8 @@ do
 
     case $opt in
       1) clear; ./makefolder;;
-      2) ./collectfromsource;;
-      3) ./makesystem;;
+      2) clear;./collectfromsource;;
+      3) clear;./makesystem;;
       0) ./cleanup;;
       x) clear; echo; echo "Goodbye."; echo; exit 1;;
       *) echo "Invalid option"; continue;;
