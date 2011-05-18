@@ -1,0 +1,49 @@
+#!/bin/bash
+echo
+echo "Start Compiler"
+echo
+user_=`whoami`
+
+#ABOUT KERNEL SOURCE PATH
+cd ..
+if [ -e pathtokernel ]
+then
+  echo "kernel source link found..."
+  if [ -f pathtokernel/Makefile ]
+  then
+    echo "Path seems to be ok..."
+  else
+    echo "Path is NOT ok! Check your path!"
+    read pah
+    exit 0
+  fi
+else
+  echo -n "relative path to kernel source (from kitchen root; ../kernel e.g.): "
+  read pathtokernel
+  if [ -f $pathtokernel/Makefile ]
+  then
+    echo "Path seems to be ok..."
+    ln -s $pathtokernel pathtokernel 
+  else
+    echo "Path is NOT ok! Check your path!"
+    read pah
+    exit 0
+  fi
+fi
+
+#START COMPILER
+cd pathtokernel
+echo
+echo "Setting photon_defconfig..."
+sudo make photon_defconfig
+echo "Making clean..."
+sudo make clean
+echo "Calling compiler..."
+sudo make
+
+echo
+echo Finished!
+echo
+echo
+echo "Press Enter to continue"
+read enterKey

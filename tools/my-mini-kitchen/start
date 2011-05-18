@@ -17,8 +17,9 @@ do
   echo "============================================================"
   echo
   echo "  1 - Set up working folder from haret files"
-  echo "  2 - Collect kernel & modules from compiled kernel source & include"
-  echo "  3 - Build haret files from working folder"
+  echo "  2 - Start compiler"
+  echo "  3 - Collect kernel & modules from compiled kernel source & include"
+  echo "  4 - Build haret files from working folder"
   echo
   echo "  0 - Clean up all folders and reset kernel source path"
   echo
@@ -30,8 +31,9 @@ do
 
     case $opt in
       1) clear; ./makefolder;;
-      2) clear;./collectfromsource;;
-      3) clear;./makesystem;;
+      2) clear; ./startcompile;;
+      3) clear;./collectfromsource;;
+      4) clear;./makesystem;;
       0) ./cleanup;;
       x) clear; echo; echo "Goodbye."; echo; exit 1;;
       *) echo "Invalid option"; continue;;
