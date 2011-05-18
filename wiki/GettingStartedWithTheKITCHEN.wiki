@@ -13,10 +13,10 @@ This is more thought to be for developers, to set up and change system.ext2 and 
 
 This will be the easiest thing on the world:
 
-  * Put your original system.ext2 and/or initrd.gz files to the folder ORIGIN
-  * begin creating up a workingfolder with <b>option 1</b> in the menu
-  * Now you should have the extracted files in your WORKING folder
-  * Edit your files how ever you want, but keep an Eye on the permission!
-  * To rebuild the files use <b>option 3</b> in the menu, if you get no errors your files will be placed to folder "OUTPUT"
+  * Put your original system.ext2 and/or initrd.gz, zImage files to the folder <b>ORIGIN</b>
+  * <b>Option 1</b> in the menu will setup a new WORKING folder. All files you have put to ORIGIN before will now have been extracted. 
+  * <b>Edit</b> your files how ever you want, but keep an eye on the permissions!
+  * <b>Option 2</b> gives you the possibility to connect to a kernel source on your system, and allows you to get the compiled kernel & modules easily to your system. The files will be added to system, you won't have to care about anything else.
+  * <b>Option 3</b> in the menu will build all files you have set up before and release them to the OUTPUT folder. You can now take the files and copy them to your SD-Card.
 
 That's it! Have fun :)
