@@ -22,7 +22,7 @@ copy the files from the folder named for_sd_card to the root of SD card<br><br>
 Android should boot over Windows!<br><br>
 
 <br>
-===When updating to a new release:===
+===Note when updating to a new release:===
   # delete ANYTHING related to Android installation(including created folders)<br>
   # copy/paste the updated files on the root of SD card (update folder included)<br>
 
