@@ -21,6 +21,10 @@ copy the files from the folder named for_sd_card to the root of SD card<br><br>
 ===5. wait 5-10 min...===
 Android should boot over Windows!<br><br>
 
+Updating to a new release:
+
+1. delete ANYTHING related to Android installation(including created folders)
+2.copy/paste the updated files on the root of SD card
 
 <br><br><br>
 ===What to do if Android wont boot:===
