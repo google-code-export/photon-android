@@ -37,6 +37,6 @@ Usualy Kingston gives good results, as well as some unbranded cards. See xda for
 === Known issues: ===
   * GPS software in WM will not find satellites if you turn off GPS from location settings in Android
   * if you lower ringtone volume in Android you will also have lower ringtone in WM(even if it's on maximum)
-  * 3G/GPRS connection is not working<br>
-  * other known bugs here:<br>
+  
+ * other known bugs here:<br>
 http://forum.xda-developers.com/showthread.php?t=1073817<br>
