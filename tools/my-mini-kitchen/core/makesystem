@@ -61,7 +61,7 @@ then
 echo
 echo "DOING ON SYSTEM.EXT2:"
 echo Preparing..
-sudo chown -R root system/*
+#sudo chown -R root system/*
 num_blocks=`du -sk system | tail -n1 | awk '{print $1;}'`
 if [ $num_blocks -lt 20480 ]
 then
@@ -76,14 +76,14 @@ num_inodes=`find system | wc -l` ; num_inodes=`expr $num_inodes + 500`
 echo num_blocks=$num_blocks num_inodes=$num_inodes extra_blocks=$extra_blocks
 echo Building File..
 sudo genext2fs -d system -b $num_blocks -N $num_inodes -m 0 ../OUTPUT/system.ext2
-sudo chown -R $user_:$user_ ../OUTPUT/system.ext2
+#sudo chown -R $user_:$user_ ../OUTPUT/system.ext2
 echo Doing some tuning..
-tune2fs -L system ../OUTPUT/system.ext2
-tune2fs -C 1 ../OUTPUT/system.ext2
+sudo tune2fs -L system ../OUTPUT/system.ext2
+sudo tune2fs -C 1 ../OUTPUT/system.ext2
 echo Checking Filesystem..
-e2fsck -fy ../OUTPUT/system.ext2
+sudo e2fsck -fy ../OUTPUT/system.ext2
 echo Reverting SYSTEM folder...
-sudo chown -R $user_ system/*
+#sudo chown -R $user_ system/*
 fi
 
 #GETTING STARTED WITH INITRD.GZ

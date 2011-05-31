@@ -64,11 +64,11 @@ fi
 #COPY THE FILES
 echo
 echo 'Copying modules...'
-find pathtokernel/drivers/ -iname '*.ko'  -exec cp -vf {} WORKING/system/lib/modules \;
+sudo find pathtokernel/drivers/ -iname '*.ko'  -exec cp -vf {} WORKING/system/lib/modules \;
 echo  "Copying kernel..."
-cp -vf pathtokernel/arch/arm/boot/zImage WORKING
+sudo cp -vf pathtokernel/arch/arm/boot/zImage WORKING
 echo "Adding permissions..."
-sudo chown $user_:root WORKING/system/lib/modules/*.ko
+sudo chown root:root WORKING/system/lib/modules/*.ko
 sudo chmod 0744 WORKING/system/lib/modules/*.ko
 cd core
 echo
