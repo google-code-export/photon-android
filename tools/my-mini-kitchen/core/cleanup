@@ -7,9 +7,9 @@ echo
 echo "Cleaning ORIGIN..."
 rm -rf ../ORIGIN/*
 echo "Cleaning WORKING..."
-rm -rf ../WORKING/*
+sudo rm -rf ../WORKING/*
 echo "Cleaning OUTPUT..."
-rm -rf ../OUTPUT/*
+sudo rm -rf ../OUTPUT/*
 echo "Cleaning kernel source path..."
 rm -rf ../pathtokernel
 echo
