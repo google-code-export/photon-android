@@ -183,6 +183,11 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 #ifdef CONFIG_MSM_CPU_FREQ_SET_MIN_MAX
 	policy->min = CONFIG_MSM_CPU_FREQ_MIN;
 	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
+#else
+#ifndef CONFIG_PERFLOCK
+	policy->min = CONFIG_MSM_CPU_FREQ_ONDEMAND_MIN;
+	policy->max = CONFIG_MSM_CPU_FREQ_ONDEMAND_MAX;
+#endif
 #endif
 
 #ifndef CONFIG_ARCH_MSM8X60
@@ -259,6 +264,11 @@ static int msm_cpufreq_pm_event(struct notifier_block *this,
 	}
 }
 
+static struct freq_attr *msm_cpufreq_attr[] = {
+	&cpufreq_freq_attr_scaling_available_freqs,
+	NULL,
+};
+
 static struct cpufreq_driver msm_cpufreq_driver = {
 	/* lps calculations are handled here. */
 	.flags		= CPUFREQ_STICKY | CPUFREQ_CONST_LOOPS,
@@ -266,6 +276,7 @@ static struct cpufreq_driver msm_cpufreq_driver = {
 	.verify		= msm_cpufreq_verify,
 	.target		= msm_cpufreq_target,
 	.name		= "msm",
+	.attr		= msm_cpufreq_attr,
 };
 
 static struct notifier_block msm_cpufreq_pm_notifier = {
