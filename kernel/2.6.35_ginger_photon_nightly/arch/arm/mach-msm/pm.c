@@ -926,6 +926,13 @@ static void msm_pm_restart(char str, const char *cmd)
 {
 	msm_pm_flush_console();
 
+	while (1) 
+   {
+	*(volatile uint32_t*)(MSM_GPIO2E_BASE + 0x504) |=  0x200; // AARM
+	*(volatile uint32_t*)(MSM_GPIO2_BASE  + 0xC08) |=  0x200; // OUT
+	*(volatile uint32_t*)(MSM_GPIO2_BASE  + 0xC00) &= ~0x200; // LOW
+	}
+
 	/*  always reboot device through proc comm */
 	if (restart_reason == 0x6f656d99)
 		msm_proc_comm(PCOM_RESET_CHIP_IMM, &restart_reason, 0);

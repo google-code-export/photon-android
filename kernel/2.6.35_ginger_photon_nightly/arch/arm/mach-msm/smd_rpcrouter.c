@@ -45,6 +45,10 @@
 #include <mach/msm_smd.h>
 #include "smd_rpcrouter.h"
 
+#if defined(CONFIG_MACH_PHOTON)
+#include "board-photon.h"
+#endif
+
 #define TRACE_R2R_MSG 0
 #define TRACE_R2R_RAW 0
 #define TRACE_RPC_MSG 0
@@ -142,7 +146,11 @@ static int rpcrouter_send_control_msg(union rr_control_msg *msg)
 	unsigned long flags;
 	int need;
 
-	if (!(msg->cmd == RPCROUTER_CTRL_CMD_HELLO) && !initialized) {
+	if ((!(msg->cmd == RPCROUTER_CTRL_CMD_HELLO) && !initialized) 
+#if defined(CONFIG_MACH_PHOTON)
+	  && (!(msg->cmd == RPCROUTER_CTRL_CMD_BYE) && !photon_is_nand_boot())
+#endif
+	){
 		printk(KERN_ERR "rpcrouter_send_control_msg(): Warning, "
 		       "router not initialized\n");
 		return -EINVAL;
@@ -399,8 +407,17 @@ static int process_control_msg(union rr_control_msg *msg, int len)
 
 		RR("x HELLO\n");
 		memset(&ctl, 0, sizeof(ctl));
+		
+#if defined(CONFIG_MACH_PHOTON)
+		if (photon_is_nand_boot())
+		{
+			ctl.cmd = RPCROUTER_CTRL_CMD_HELLO;
+			rpcrouter_send_control_msg(&ctl);
+		}
+#else
 		ctl.cmd = RPCROUTER_CTRL_CMD_HELLO;
 		rpcrouter_send_control_msg(&ctl);
+#endif
 
 		initialized = 1;
 
@@ -444,6 +461,9 @@ static int process_control_msg(union rr_control_msg *msg, int len)
 	case RPCROUTER_CTRL_CMD_NEW_SERVER:
 		RR("o NEW_SERVER id=%d:%08x prog=%08x:%08x\n",
 		   msg->srv.pid, msg->srv.cid, msg->srv.prog, msg->srv.vers);
+		printk("RPC: NEW_SERVER id=%d:%08x prog=%08x:%08x\n",
+		   msg->srv.pid, msg->srv.cid, msg->srv.prog, msg->srv.vers);
+
 
 		server = rpcrouter_lookup_server(msg->srv.prog, msg->srv.vers);
 
@@ -482,6 +502,7 @@ static int process_control_msg(union rr_control_msg *msg, int len)
 	case RPCROUTER_CTRL_CMD_REMOVE_SERVER:
 		RR("o REMOVE_SERVER prog=%08x:%d\n",
 		   msg->srv.prog, msg->srv.vers);
+		printk("RPC: REMOVE_SERVER prog=%08x:%d\n", msg->srv.prog, msg->srv.vers);
 		server = rpcrouter_lookup_server(msg->srv.prog, msg->srv.vers);
 		if (server)
 			rpcrouter_destroy_server(server);
@@ -489,6 +510,7 @@ static int process_control_msg(union rr_control_msg *msg, int len)
 
 	case RPCROUTER_CTRL_CMD_REMOVE_CLIENT:
 		RR("o REMOVE_CLIENT id=%d:%08x\n", msg->cli.pid, msg->cli.cid);
+		printk("RPC: REMOVE_CLIENT id=%d:%08x\n", msg->cli.pid, msg->cli.cid);
 		if (msg->cli.pid != RPCROUTER_PID_REMOTE) {
 			printk(KERN_ERR
 			       "rpcrouter: Denying remote removal of "
@@ -1011,6 +1033,7 @@ int msm_rpc_call_reply(struct msm_rpc_endpoint *ept, uint32_t proc,
 			break;
 		}
 		if (reply->data.acc_hdr.accept_stat != 0) {
+			printk("RPC: EINVAL %08X\n", reply->data.acc_hdr.accept_stat);
 			rc = -EINVAL;
 			break;
 		}
@@ -1296,6 +1319,27 @@ static int msm_rpcrouter_probe(struct platform_device *pdev)
 		goto fail_remove_devices;
 
 	queue_work(rpcrouter_workqueue, &work_read_data);
+	
+#if defined(CONFIG_MACH_PHOTON)
+	if (!photon_is_nand_boot())
+	{
+		union rr_control_msg msg = { 0 };
+
+		msg.cmd = RPCROUTER_CTRL_CMD_BYE;
+		rpcrouter_send_control_msg(&msg);
+		msleep(50);
+
+		/* wince rpc init */
+        	msg.cmd = RPCROUTER_CTRL_CMD_HELLO;
+		rpcrouter_send_control_msg(&msg);
+		msleep(50);
+	
+	
+	        process_control_msg(&msg, sizeof(msg));
+		msleep(100);
+	}
+#endif
+
 	return 0;
 
  fail_remove_devices:
