@@ -262,6 +262,7 @@ int msm_adsp_get(const char *name, struct msm_adsp_module **out,
 {
 	struct msm_adsp_module *module;
 	int rc = 0;
+#if !defined(CONFIG_MACH_PHOTON)
 	static uint32_t init_info_cmd_sent;
 
 	if (!init_info_cmd_sent) {
@@ -276,6 +277,7 @@ int msm_adsp_get(const char *name, struct msm_adsp_module **out,
 		}
 		init_info_cmd_sent++;
 	}
+#endif
 
 	module = find_adsp_module_by_name(&adsp_info, name);
 	if (!module)

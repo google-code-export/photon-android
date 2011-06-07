@@ -260,6 +260,25 @@ static int kgsl_power(bool on)
 }
 #endif
 
+static void pc_clk_reset(unsigned id)
+{
+	int r;
+	r = msm_proc_comm(PCOM_CLKCTL_RPC_RESET, &id, NULL);
+	printk("PCOM_CLKCTL_RPC_ENABLE = %d\n", r);
+	return r;
+}
+
+void kgsl_boot_reset(void)
+{
+	pc_clk_reset(8);
+	kgsl_power_rail_mode(0);
+	kgsl_power(false);
+	pc_clk_reset(8);
+	mdelay(150);
+	kgsl_power(true);
+	pc_clk_reset(8);
+}
+
 #endif
 
 void __init msm_add_mem_devices(struct msm_pmem_setting *setting)

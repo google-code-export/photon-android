@@ -1311,7 +1311,7 @@ static void __init photon_map_io(void)
 	io_already_inited = 1;
 }
 
-MACHINE_START(LIBERTY, "photon")
+MACHINE_START(PHOTON, "photon")
 #ifdef CONFIG_MSM_DEBUG_UART
 	.phys_io        = MSM_DEBUG_UART_PHYS,
 	.io_pg_offst    = ((MSM_DEBUG_UART_BASE) >> 18) & 0xfffc,
