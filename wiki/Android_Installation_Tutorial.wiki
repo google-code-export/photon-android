@@ -10,7 +10,7 @@ Latest release can be found on the download section of this page: <br>
 http://code.google.com/p/photon-android/downloads/list
 <br><br>
 ===2. copy the files ====
-copy the files from the folder named for_sd_card to the root of SD card<br><br>
+copy the files from the root folder of the archive to the root of SD card<br><br>
 
 === 3. remove your SIM card for the first android boot ===
 (otherwise you will have unexpected error in android)<br><br>
