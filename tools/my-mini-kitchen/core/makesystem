@@ -76,14 +76,12 @@ num_inodes=`find system | wc -l` ; num_inodes=`expr $num_inodes + 500`
 echo num_blocks=$num_blocks num_inodes=$num_inodes extra_blocks=$extra_blocks
 echo Building File..
 sudo genext2fs -d system -b $num_blocks -N $num_inodes -m 0 ../OUTPUT/system.ext2
-#sudo chown -R $user_:$user_ ../OUTPUT/system.ext2
 echo Doing some tuning..
 sudo tune2fs -L system ../OUTPUT/system.ext2
 sudo tune2fs -C 1 ../OUTPUT/system.ext2
 echo Checking Filesystem..
 sudo e2fsck -fy ../OUTPUT/system.ext2
-echo Reverting SYSTEM folder...
-#sudo chown -R $user_ system/*
+sudo chmod 777 ../OUTPUT/system.ext2
 fi
 
 #GETTING STARTED WITH INITRD.GZ
