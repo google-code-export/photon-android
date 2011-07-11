@@ -1,0 +1,8 @@
+#summary Photon on Android UserGuide
+
+= Photon on Android User Guide =
+<i>Credits to 15MA1L for the pics</i>
+
+http://forum.xda-developers.com/attachment.php?attachmentid=650937&d=1310326121&nonsense=something_that_ends_with.png
+
+http://forum.xda-developers.com/attachment.php?attachmentid=647320&d=1309981519&nonsense=something_that_ends_with.png
