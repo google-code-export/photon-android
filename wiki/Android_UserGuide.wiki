@@ -1,14 +1,14 @@
 #summary Photon on Android UserGuide
 
 = Photon on Android User Guide =
-<i>Credits to 15MA1L for the pics</i>
 
-http://forum.xda-developers.com/attachment.php?attachmentid=650937&d=1310326121&nonsense=something_that_ends_with.png
-
-http://forum.xda-developers.com/attachment.php?attachmentid=647320&d=1309981519&nonsense=something_that_ends_with.png
-
-<br>See this page for animated tutorial learning center:<br>
+See here for animated tutorial learning center on Android:<br>
 http://att.deviceanywhere.com/Aria/tutorials
 
 <br>See here for user manual & how-to:<br>
-http://www.htc.com/us/support/aria-att/help/
+http://www.htc.com/us/support/aria-att/help/<br>
+
+<br><i>Credits to 15MA1L for the pics below </i><br><br>
+http://forum.xda-developers.com/attachment.php?attachmentid=650937&d=1310326121&nonsense=something_that_ends_with.png
+
+http://forum.xda-developers.com/attachment.php?attachmentid=647320&d=1309981519&nonsense=something_that_ends_with.png
