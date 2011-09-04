@@ -5,6 +5,8 @@
 <br><br>Based on post of Tzacapaca:<br>
 http://forum.xda-developers.com/showthread.php?t=1002178<br><br>
 
+<br><br> Be sure you have latest wm radio/rom on your device! If its too old it can cause freezes and several error messages!
+
 ===1. download Android for photon===
 Latest release can be found on the download section of this page: <br>
 http://code.google.com/p/photon-android/downloads/list
